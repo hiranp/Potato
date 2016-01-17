@@ -13,6 +13,8 @@ NBNS is a broadcast UDP protocol for name resolution commonly used in Windows en
 
 If we can know ahead of time which host a target machine (in this case our target is 127.0.0.1) will be sending an NBNS query for, we can craft a response and flood the target host with NBNS responses (since it is a UDP protocol). One complication is that a 2-byte field in the NBNS packet, the TXID, must match in the request and response. We can overcome this by flooding quickly and iterating over all 65536 possible values.
 
+What if the host we are trying to spoof has a DNS record already? Well we can FORCE DNS lookups to fail in a funny way. Using a technique called "port exhaustion" we bind to every single UDP port. When you try to perform a DNS lookup it will fail because there will be no available source port for the DNS reply to come to.
+
 In testing, this has proved to be 100% effective.
 
 #####2. Fake WPAD Proxy Server
@@ -53,12 +55,16 @@ Potato.exe has code to automatically trigger this. Simply run the following:
 
 This will spin up the NBNS spoofer, spoof "WPAD" to 127.0.0.1, then check for Windows Defender updates.
 
+If your network has a DNS entry for "WPAD" already, you can try "-disable_exhaust false". This should cause the DNS lookup to fail and it should fallback to NBNS. We've tested this a couple times and had it work
+
 #####Windows Server 2008 - see https://www.youtube.com/watch?v=z_IGPWgL5SY
 Since Windows Server doesn't come with Defender, we need an alternate method. Instead we'll simply check for Windows updates. The other caveat is that, at least on my domain, Server 2K8 wanted WPAD.DOMAIN.TLD instead of just WPAD. The following is an example usage:
 
 ```Potato.exe -ip <local ip> -cmd <command to run> -disable_exhaust true -disable_defender true --spoof_host WPAD.EMC.LOCAL```
 
 After this runs successfully, simply check for Windows updates. If it doesn't trigger, wait about 30m with the exploit running and check again. If it still doesn't work, try actually downloading an update.
+
+If your network has a DNS entry for "WPAD" already, you can try "-disable_exhaust false". This should cause the DNS lookup to fail and it should fallback to NBNS. We've tested this a couple times and had it work
 
 #####Windows 8/10/Server 2012 - see https://www.youtube.com/watch?v=Kan58VeYpb8
 In the newest versions of Windows, it appears that Windows Update may no longer respect the proxy settings set in "Internet Options", or check for WPAD. Instead proxy settings for Windows Update are controlled using "netsh winhttp proxy..."
@@ -74,6 +80,7 @@ In this case the usage of Potato is as follows:
 
 At this point, you will need to wait up to 24hrs or find another way to trigger this update.
 
+If your network has a DNS entry for "WPAD" already, you can try "-disable_exhaust false". This should cause the DNS lookup to fail and it should fallback to NBNS. We've tested this a couple times and had it work
 
 ###Mitigations
 
