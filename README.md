@@ -56,7 +56,7 @@ This will spin up the NBNS spoofer, spoof "WPAD" to 127.0.0.1, then check for Wi
 #####Windows Server 2008 - see https://www.youtube.com/watch?v=z_IGPWgL5SY
 Since Windows Server doesn't come with Defender, we need an alternate method. Instead we'll simply check for Windows updates. The other caveat is that, at least on my domain, Server 2K8 wanted WPAD.DOMAIN.TLD instead of just WPAD. The following is an example usage:
 
-```Potato.exe -ip <local ip> -cmd <command to run> -disable_exhaust true -disable_defender true --spoof_host WPAD.EMC.LOCAL
+```Potato.exe -ip <local ip> -cmd <command to run> -disable_exhaust true -disable_defender true --spoof_host WPAD.EMC.LOCAL```
 
 After this runs successfully, simply check for Windows updates. If it doesn't trigger, wait about 30m with the exploit running and check again. If it still doesn't work, try actually downloading an update.
 
@@ -94,4 +94,4 @@ PFSense firewall
 
 From the corporate network, we’ll attack a machine on the server network.
 
-Usage: python Responder.py –I eth0 –spoof <target>:<spoof address>:<spoof host>
+Usage: ```python Responder.py –I eth0 –spoof <target>:<spoof address>:<spoof host>```
